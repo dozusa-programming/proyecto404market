@@ -88,4 +88,10 @@ public class ProductoService {
     public List<Producto> consultaPractica2(double precio) {
         return productoRepository.findByPrecioLessThanOrderByPrecioAsc(precio);
     }
+    @Transactional(readOnly = true)
+    public List<Producto> buscarPorNombre(String nombre) {
+        return productoRepository
+            .findByDescripcionContainingIgnoreCaseAndActivoTrue(nombre);
+    }
+
 }

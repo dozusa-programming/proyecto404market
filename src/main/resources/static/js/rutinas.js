@@ -29,3 +29,14 @@ document.addEventListener('DOMContentLoaded', function () {
 setTimeout(() => {
     document.querySelectorAll('.toast').forEach(t => t.classList.remove('show'));
 }, 4000);
+
+// HU3 — Cambio de idioma
+function cambiarIdioma(lang) {
+    fetch('/cambiar-idioma?lang=' + lang)
+        .then(() => location.reload());
+}
+
+// HU8 — Región en sesión
+function cambiarRegion(region) {
+    sessionStorage.setItem('region', region);
+}

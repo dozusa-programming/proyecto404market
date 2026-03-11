@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name="categoria")
+@Table(name="ts_categoria")
 public class Categoria implements Serializable{
     private static final long serialVersionUID = 1L;
     

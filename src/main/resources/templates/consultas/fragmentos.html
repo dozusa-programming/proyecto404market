@@ -1,56 +1,111 @@
-<!-- fragmento 1 para Mostrar las categorias en tabs -->
-<section th:fragment="tabs" class="py-3 mb-4">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 
-    <div class="d-flex justify-content-center px-5">
-        <ul class="nav nav-underline">
-            <li class="nav-item">
-                <a class="nav-link" 
-                   aria-current="page" }
-                   th:href="@{/}">
-                    [[#{pruebas.todas}]]</a>
-            </li>
-            <li th:each="c : ${categorias}"
-                class="nav-item">
-                <a class="nav-link" 
-                   th:href="@{/consultas/{id}(id=${c.idCategoria})}">
-                    [[${c.descripcion}]]</a>
-            </li>
-        </ul>
+<!-- ===== ASIDE: Menú lateral → HU9 ===== -->
+<aside th:fragment="menuCategorias" class="bg-white border-end p-3"
+       style="min-width:200px; width:200px;">
+    <h6 class="text-uppercase text-muted fw-bold mb-3"
+        th:text="#{plantilla.categorias}">Categorías</h6>
+    <ul class="list-unstyled">
+        <li class="mb-1">
+            <a th:href="@{/}"
+               class="d-block px-3 py-2 rounded text-decoration-none"
+               th:classappend="${param.idCategoria == null and param.q == null} ? 'bg-success text-white' : 'text-dark'"
+               th:text="#{pruebas.todas}">Todas</a>
+        </li>
+        <li class="mb-1" th:each="c : ${categorias}">
+            <a th:href="@{/consultas/{id}(id=${c.idCategoria})}"
+               class="d-block px-3 py-2 rounded text-decoration-none"
+               th:classappend="${param.idCategoria != null and param.idCategoria == c.idCategoria.toString()} ? 'bg-success text-white' : 'text-dark hover-green'"
+               th:text="${c.descripcion}">Categoría</a>
+        </li>
+    </ul>
+</aside>
+
+<!-- ===== TARJETAS DE PRODUCTOS → HU4, HU13 ===== -->
+<th:block th:fragment="tarjetas">
+
+    <!-- Grid de categorías en home -->
+    <div th:if="${param.idCategoria == null and param.q == null}"
+         class="row row-cols-2 row-cols-sm-3 row-cols-lg-4 g-3 mb-4">
+        <div class="col" th:each="c : ${categorias}">
+            <a th:href="@{/consultas/{id}(id=${c.idCategoria})}"
+               class="card text-center text-decoration-none border-0 shadow-sm h-100 p-2">
+                <img th:if="${c.rutaImagen != null}"
+                     th:src="${c.rutaImagen}" th:alt="${c.descripcion}"
+                     class="card-img-top rounded mx-auto mt-2"
+                     style="width:80px; height:80px; object-fit:cover;"/>
+                <img th:unless="${c.rutaImagen != null}"
+                     src="https://placehold.co/80x80?text=Cat"
+                     class="card-img-top rounded mx-auto mt-2"
+                     style="width:80px; height:80px;"/>
+                <div class="card-body p-1">
+                    <small class="fw-semibold text-dark" th:text="${c.descripcion}">Cat</small>
+                </div>
+            </a>
+        </div>
     </div>
 
-</section>
+    <!-- Título de sección -->
+    <h5 th:if="${categoriaActual != null}"
+        class="mb-3 text-secondary" th:text="${categoriaActual.descripcion}"></h5>
+    <h5 th:if="${param.q != null}" class="mb-3 text-secondary">
+        <i class="fas fa-search"></i>
+        Resultados para: <span th:text="${param.q}"></span>
+    </h5>
 
-<!-- fragmento 2 para mostrar los productos en tarjetas -->
-<section th:fragment="tarjetas" class="container py-4">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
-        <div th:each="p : ${productos}" class="col">
+    <!-- Sin resultados -->
+    <div th:if="${productos == null or productos.empty}"
+         class="text-center text-muted py-5">
+        <i class="fas fa-box-open fa-3x mb-3"></i>
+        <p>No se encontraron productos.</p>
+    </div>
+
+    <!-- Grid de tarjetas → HU13 -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4"
+         th:unless="${productos == null or productos.empty}">
+        <div class="col" th:each="p : ${productos}">
             <div class="card h-100 shadow-sm">
+                <!-- Imagen -->
                 <div class="d-flex justify-content-center align-items-center bg-light p-3"
-                     style="height: 200px">
-                    <img th:src="${p.rutaImagen}" class="img-fluid" 
-                         alt="..." style="max-height: 100%; object-fit: contain">
+                     style="height:180px;">
+                    <img th:if="${p.rutaImagen != null}"
+                         th:src="${p.rutaImagen}" th:alt="${p.descripcion}"
+                         class="img-fluid" style="max-height:100%; object-fit:contain;"/>
+                    <img th:unless="${p.rutaImagen != null}"
+                         src="https://placehold.co/150x150?text=Producto"
+                         class="img-fluid"/>
                 </div>
+                <!-- Nombre -->
                 <div class="card-header bg-white">
-                    <h5 class="card-title text-center text-truncate mb-0">
-                        [[${p.descripcion}]]
-                    </h5>
+                    <h6 class="card-title text-center text-truncate mb-0"
+                        th:text="${p.descripcion}">Producto</h6>
                 </div>
-                <div class="card-body d-flex flex-column">
-                    <p class="card-text text-muted mb-auto text-truncate">[[${p.detalle}]]</p>
+                <!-- Detalle -->
+                <div class="card-body">
+                    <p class="card-text text-muted small text-truncate"
+                       th:text="${p.detalle}"></p>
                 </div>
+                <!-- Precio + stock + botón -->
                 <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-                    <div class="fw-bold">
-                        <span class="text-success h5">[[${#numbers.formatCurrency(p.precio)}]]</span>
-                        <span th:if="${p.existencias > 0}" class="badge text-bg-success">[[${p.existencias}]] unidades</span>
-                        <span th:if="${p.existencias < 1}" class="badge text-bg-danger">Agotado!</span>
+                    <div>
+                        <span class="text-success fw-bold"
+                              th:text="${#numbers.formatDecimal(p.precio,1,'COMMA',2,'POINT')} + ' ₡'">
+                            ₡0.00
+                        </span>
+                        <br/>
+                        <span th:if="${p.existencias > 0}"
+                              class="badge bg-success"
+                              th:text="${p.existencias} + ' uds.'">Stock</span>
+                        <span th:unless="${p.existencias > 0}"
+                              class="badge bg-danger">Agotado</span>
                     </div>
-                    <form th:action="@{/carrito/agregar}"
-                          class="d-inline"
-                          th:method="post">
-                        <input type="hidden" th:value="${p.idProducto}" name="idProducto"/>
+                    <!-- Botón carrito → HU5 (preparado) -->
+                    <form th:action="@{/carrito/agregar}" method="post" class="d-inline">
+                        <input type="hidden" name="idProducto" th:value="${p.idProducto}"/>
                         <button type="button"
                                 class="btn btn-sm btn-primary"
-                                th:disabled="${p.existencias < 1}"
+                                th:disabled="${p.existencias <= 0}"
                                 onclick="addCart(this.form)">
                             <i class="fas fa-cart-plus"></i>
                         </button>
@@ -59,69 +114,6 @@
             </div>
         </div>
     </div>
-</section>
+</th:block>
 
-<!-- fragmento 3 donde aparecen los formularios para las consultas-->
-
-<section th:fragment="consultas" class="row row-cols-4 p-2">
-    <div th:replace="~{consultas/fragmentos :: formConsulta('primary', #{consultas.derivadas}, '/consultas/consultaDerivada')}"/>
-    <div th:replace="~{consultas/fragmentos :: formConsulta('warning', #{consultas.jpql}, '/consultas/consultaJPQL')}"/>
-    <div th:replace="~{consultas/fragmentos :: formConsulta('success', #{consultas.sql}, '/consultas/consultaSQL')}"/>
-    <div th:replace="~{consultas/fragmentos :: formConsultaPractica2('dark', #{consultas.practica2}, '/consultas/consultaPractica2')}"/>
-    
-</section>
-
-<!-- fragmento 4 para mostrar los formularios para las consultas-->
-<div th:fragment="formConsulta(colorForm, textoForm, accionForm)">
-    <div class="card p-2">
-        <form method="post" th:action="@{${accionForm}}" class="was-validated">
-            <div class="card-header text-center text-white" th:classappend="${'bg-' + colorForm}">
-                <h5>[[${textoForm}]]</h5>
-            </div>
-            <div class="card-body">
-                <div class='mb-3'>
-                    <label>[[#{consultas.precio.inferior}]]</label>
-                    <input type="number" name='precioInf'
-                           th:value='${precioInf}' class='form-control'
-                           min='0' required/>
-                </div>
-                <div class='mb-3'>
-                    <label>[[#{consultas.precio.superior}]]</label>
-                    <input type="number" name='precioSup'
-                           th:value='${precioSup}' class='form-control'
-                           min='0' required/>
-                </div>
-            </div>
-            <div class='card-footer text-center'>
-                <button type='submit' class='btn text-white'
-                        th:classappend="${'bg-'+colorForm}">
-                    <i class='fa-solid fa-magnifying-glass'></i> [[${textoForm}]]
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div th:fragment="formConsultaPractica2(colorForm, textoForm, accionForm)">
-    <div class="card p-2">
-        <form method="post" th:action="@{${accionForm}}" class="was-validated">
-            <div class="card-header text-center text-white" th:classappend="${'bg-' + colorForm}">
-                <h5>[[${textoForm}]]</h5>
-            </div>
-            <div class="card-body">
-                <div class='mb-3'>
-                    <label>[[#{consultas.precio.maximo}]]</label>
-                    <input type="number" name='precioSup'
-                           th:value='${precioSup}' class='form-control'
-                           min='0' required/>
-                </div>
-            </div>
-            <div class='card-footer text-center'>
-                <button type='submit' class='btn text-white'
-                        th:classappend="${'bg-'+colorForm}">
-                    <i class='fa-solid fa-magnifying-glass'></i> [[${textoForm}]]
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+</html>
