@@ -7,13 +7,9 @@
 <body>
     <header th:replace="~{general/fragmentos :: header}"/>
 
-    <div class="d-flex">
-        <aside th:replace="~{consultas/fragmentos :: menuCategorias}"/>
-        <main class="flex-grow-1 p-3">
-            <section th:replace="~{consultas/fragmentos :: tarjetas}"/>
-        </main>
-    </div>
+    <section th:replace="~{carrito/fragmentos :: carrito}"/>
 
     <footer th:replace="~{general/fragmentos :: footer}"/>
 </body>
 </html>
+

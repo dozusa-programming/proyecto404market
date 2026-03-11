@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-srpingsecurity6">
+
+<!-- ===== FORMULARIO DE PAGO ===== -->
+<section th:fragment="formularioPago">
+    <div class="container mt-4" style="max-width:500px;">
+        <h4 class="fw-bold text-success mb-4">
+            <i class="fas fa-credit-card me-2"></i>
+            Método de pago
+        </h4>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form action="/pago/confirmar" method="post">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Seleccioná cómo querés pagar:</label>
+
+                        <div class="d-grid gap-2 mt-2">
+
+                            <input type="radio" class="btn-check" name="metodoPago"
+                                   id="tarjeta" value="TARJETA" required/>
+                            <label class="btn btn-outline-success btn-lg" for="tarjeta">
+                                <i class="fas fa-credit-card me-2"></i>
+                                Pagar con tarjeta
+                            </label>
+
+                            <input type="radio" class="btn-check" name="metodoPago"
+                                   id="entrega" value="ENTREGA"/>
+                            <label class="btn btn-outline-secondary btn-lg" for="entrega">
+                                <i class="fas fa-truck me-2"></i>
+                                Contra entrega
+                            </label>
+
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div class="d-flex gap-2">
+                        <a href="/carrito" class="btn btn-outline-secondary w-50">
+                            <i class="fas fa-arrow-left me-1"></i> Volver
+                        </a>
+                        <button type="submit" class="btn btn-success w-50">
+                            <i class="fas fa-check me-1"></i> Confirmar pedido
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CONFIRMACIÓN ===== -->
+<section th:fragment="confirmacion">
+    <div class="container mt-4" style="max-width:600px;">
+
+        <!-- Éxito -->
+        <div class="text-center mb-4">
+            <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+            <h4 class="fw-bold">¡Pedido confirmado!</h4>
+            <p class="text-muted">Tu pedido #<span th:text="${pedido.idPedido}"></span> fue registrado exitosamente.</p>
+        </div>
+
+        <!-- Resumen -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white fw-bold">
+                <i class="fas fa-receipt me-2"></i> Resumen del pedido
+            </div>
+            <div class="card-body">
+
+                <!-- Detalle de productos -->
+                <table class="table table-sm align-middle mb-3">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Producto</th>
+                            <th class="text-center">Cantidad</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="d : ${pedido.detalles}">
+                            <td th:text="${d.producto.descripcion}"></td>
+                            <td class="text-center" th:text="${d.cantidad}"></td>
+                            <td class="text-end"
+                                th:text="${#numbers.formatDecimal(d.subtotal,1,'COMMA',2,'POINT')} + ' ₡'"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Totales -->
+                <div class="d-flex justify-content-between text-muted small">
+                    <span>Subtotal</span>
+                    <span th:text="${#numbers.formatDecimal(pedido.subtotal,1,'COMMA',2,'POINT')} + ' ₡'"></span>
+                </div>
+                <div class="d-flex justify-content-between text-muted small">
+                    <span>IVA (13%)</span>
+                    <span th:text="${#numbers.formatDecimal(pedido.impuesto,1,'COMMA',2,'POINT')} + ' ₡'"></span>
+                </div>
+                <hr/>
+                <div class="d-flex justify-content-between fw-bold fs-5">
+                    <span>Total</span>
+                    <span th:text="${#numbers.formatDecimal(pedido.total,1,'COMMA',2,'POINT')} + ' ₡'"></span>
+                </div>
+
+                <!-- Método de pago -->
+                <div class="mt-3">
+                    <span class="badge bg-success fs-6" th:if="${pedido.metodoPago == 'TARJETA'}">
+                        <i class="fas fa-credit-card me-1"></i> Pago con tarjeta
+                    </span>
+                    <span class="badge bg-secondary fs-6" th:if="${pedido.metodoPago == 'ENTREGA'}">
+                        <i class="fas fa-truck me-1"></i> Contra entrega
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="d-flex gap-2">
+            <a href="/consultas/listado" class="btn btn-success w-50">
+                <i class="fas fa-store me-1"></i> Seguir comprando
+            </a>
+            <a href="/pago/mis-pedidos" class="btn btn-outline-secondary w-50">
+                <i class="fas fa-list me-1"></i> Mis pedidos
+            </a>
+        </div>
+    </div>
+</section>
+<!-- ===== MIS PEDIDOS ===== -->
+<section th:fragment="misPedidos">
+    <div class="container mt-4">
+        <h4 class="fw-bold text-success mb-4">
+            <i class="fas fa-list me-2"></i>
+            Mis Pedidos
+        </h4>
+
+        <!-- Sin pedidos -->
+        <div th:if="${pedidos == null or pedidos.empty}" class="text-center py-5">
+            <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+            <p class="text-muted fs-5">Aún no tenés pedidos realizados</p>
+            <a href="/consultas/listado" class="btn btn-success mt-2">
+                <i class="fas fa-store me-1"></i> Ver productos
+            </a>
+        </div>
+
+        <!-- Lista de pedidos -->
+        <div th:unless="${pedidos == null or pedidos.empty}">
+            <div class="accordion" id="acordeonPedidos">
+                <div class="accordion-item mb-3 shadow-sm"
+                     th:each="pedido, i : ${pedidos}">
+
+                    <!-- Cabecera -->
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-semibold"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                th:attr="data-bs-target='#pedido' + ${pedido.idPedido},
+                                         aria-controls='pedido' + ${pedido.idPedido}">
+                            <div class="d-flex justify-content-between w-100 me-3">
+                                <span>
+                                    <i class="fas fa-receipt me-2 text-success"></i>
+                                    Pedido #<span th:text="${pedido.idPedido}"></span>
+                                </span>
+                                <span class="text-muted small">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    <span th:text="${#temporals.format(pedido.fecha, 'dd/MM/yyyy HH:mm')}"></span>
+                                </span>
+                                <span>
+                                    <span th:if="${pedido.metodoPago == 'TARJETA'}"
+                                          class="badge bg-success">
+                                        <i class="fas fa-credit-card me-1"></i> Tarjeta
+                                    </span>
+                                    <span th:if="${pedido.metodoPago == 'ENTREGA'}"
+                                          class="badge bg-secondary">
+                                        <i class="fas fa-truck me-1"></i> Entrega
+                                    </span>
+                                </span>
+                            </div>
+                        </button>
+                    </h2>
+
+                    <!-- Detalle desplegable -->
+                    <div th:id="'pedido' + ${pedido.idPedido}"
+                         class="accordion-collapse collapse"
+                         data-bs-parent="#acordeonPedidos">
+                        <div class="accordion-body">
+
+                            <table class="table table-sm align-middle mb-3">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-end">Precio unit.</th>
+                                        <th class="text-end">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="d : ${pedido.detalles}">
+                                        <td th:text="${d.producto.descripcion}"></td>
+                                        <td class="text-center" th:text="${d.cantidad}"></td>
+                                        <td class="text-end"
+                                            th:text="${#numbers.formatDecimal(d.precioUnitario,1,'COMMA',2,'POINT')} + ' ₡'"></td>
+                                        <td class="text-end"
+                                            th:text="${#numbers.formatDecimal(d.subtotal,1,'COMMA',2,'POINT')} + ' ₡'"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Totales -->
+                            <div class="row justify-content-end">
+                                <div class="col-md-4">
+                                    <div class="d-flex justify-content-between text-muted small">
+                                        <span>Subtotal</span>
+                                        <span th:text="${#numbers.formatDecimal(pedido.subtotal,1,'COMMA',2,'POINT')} + ' ₡'"></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between text-muted small">
+                                        <span>IVA (13%)</span>
+                                        <span th:text="${#numbers.formatDecimal(pedido.impuesto,1,'COMMA',2,'POINT')} + ' ₡'"></span>
+                                    </div>
+                                    <hr class="my-1"/>
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>Total</span>
+                                        <span th:text="${#numbers.formatDecimal(pedido.total,1,'COMMA',2,'POINT')} + ' ₡'"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="/consultas/listado" class="btn btn-outline-secondary mt-2">
+                <i class="fas fa-arrow-left me-1"></i> Seguir comprando
+            </a>
+        </div>
+    </div>
+</section>
+
+</html>

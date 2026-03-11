@@ -16,7 +16,7 @@
         <li class="mb-1" th:each="c : ${categorias}">
             <a th:href="@{/consultas/{id}(id=${c.idCategoria})}"
                class="d-block px-3 py-2 rounded text-decoration-none"
-               th:classappend="${param.idCategoria != null and param.idCategoria == c.idCategoria.toString()} ? 'bg-success text-white' : 'text-dark hover-green'"
+               th:classappend="${param.idCategoria != null and param.idCategoria == c.idCategoria.toString()} ? 'bg-success text-white' : 'text-dark'"
                th:text="${c.descripcion}">Categoría</a>
         </li>
     </ul>
@@ -66,8 +66,9 @@
          th:unless="${productos == null or productos.empty}">
         <div class="col" th:each="p : ${productos}">
             <div class="card h-100 shadow-sm">
+
                 <!-- Imagen -->
-                <div class="d-flex justify-content-center align-items-center bg-light p-3"
+                <div class="d-flex justify-content-center align-items-center bg-light p-3 position-relative"
                      style="height:180px;">
                     <img th:if="${p.rutaImagen != null}"
                          th:src="${p.rutaImagen}" th:alt="${p.descripcion}"
@@ -75,17 +76,30 @@
                     <img th:unless="${p.rutaImagen != null}"
                          src="https://placehold.co/150x150?text=Producto"
                          class="img-fluid"/>
+                  <span th:if="${p.descuento > 0}"
+                        class="position-absolute top-0 start-0 badge bg-danger m-2"
+                        th:text="'🏷️ -' + ${p.descuento} + '%'">
+                  </span>
+
                 </div>
+
                 <!-- Nombre -->
                 <div class="card-header bg-white">
-                    <h6 class="card-title text-center text-truncate mb-0"
-                        th:text="${p.descripcion}">Producto</h6>
+                    <a th:href="@{/producto/{id}(id=${p.idProducto})}"
+                       class="text-decoration-none text-dark">
+                        <h6 class="card-title text-center text-truncate mb-0"
+                            th:text="${p.descripcion}">Producto</h6>
+                    </a>
                 </div>
+
+
                 <!-- Detalle -->
                 <div class="card-body">
                     <p class="card-text text-muted small text-truncate"
                        th:text="${p.detalle}"></p>
                 </div>
+
+                <!-- Precio + stock + botón -->
                 <!-- Precio + stock + botón -->
                 <div class="card-footer bg-white d-flex justify-content-between align-items-center">
                     <div>
@@ -100,20 +114,29 @@
                         <span th:unless="${p.existencias > 0}"
                               class="badge bg-danger">Agotado</span>
                     </div>
-                    <!-- Botón carrito → HU5 (preparado) -->
-                    <form th:action="@{/carrito/agregar}" method="post" class="d-inline">
-                        <input type="hidden" name="idProducto" th:value="${p.idProducto}"/>
-                        <button type="button"
-                                class="btn btn-sm btn-primary"
-                                th:disabled="${p.existencias <= 0}"
-                                onclick="addCart(this.form)">
-                            <i class="fas fa-cart-plus"></i>
-                        </button>
-                    </form>
+
+                    <!-- ✅ Sin form aquí, solo botón con data attribute -->
+                    <button type="button"
+                            class="btn btn-sm btn-primary"
+                            th:disabled="${p.existencias <= 0}"
+                            th:attr="data-id=${p.idProducto}"
+                            onclick="addCart(this)">
+                        <i class="fas fa-cart-plus"></i>
+                    </button>
                 </div>
+
+
             </div>
         </div>
     </div>
+        </div><!-- cierre del row de tarjetas -->
+
+    <!-- ✅ Form único para carrito, fuera del th:each -->
+    <form id="formCarrito" th:action="@{/carrito/agregar}" method="post" class="d-none">
+        <input type="hidden" name="idProducto" id="carritoIdProducto"/>
+    </form>
+
 </th:block>
+
 
 </html>

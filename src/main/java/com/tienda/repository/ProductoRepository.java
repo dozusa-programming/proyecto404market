@@ -26,5 +26,6 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
     //Consulta Derivada que busca productos con precio menor al valor indicado
     public List<Producto> findByPrecioLessThanOrderByPrecioAsc(double precio);
     List<Producto> findByDescripcionContainingIgnoreCaseAndActivoTrue(String descripcion);
+    List<Producto> findByDescuentoGreaterThanAndActivoTrue(int descuento);
 
 }

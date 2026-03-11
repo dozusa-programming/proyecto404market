@@ -93,5 +93,9 @@ public class ProductoService {
         return productoRepository
             .findByDescripcionContainingIgnoreCaseAndActivoTrue(nombre);
     }
+    public List<Producto> getOfertas() {
+    return productoRepository.findByDescuentoGreaterThanAndActivoTrue(0);
+}
+
 
 }

@@ -40,3 +40,14 @@ function cambiarIdioma(lang) {
 function cambiarRegion(region) {
     sessionStorage.setItem('region', region);
 }
+
+function confirmarEliminar(btn) {
+    document.getElementById('idProductoEliminar').value = btn.getAttribute('data-id');
+    document.getElementById('nombreProducto').textContent = btn.getAttribute('data-nombre');
+    new bootstrap.Modal(document.getElementById('modalEliminar')).show();
+}
+
+function addCart(btn) {
+    document.getElementById('carritoIdProducto').value = btn.getAttribute('data-id');
+    document.getElementById('formCarrito').submit();
+}

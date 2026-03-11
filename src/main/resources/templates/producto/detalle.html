@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body>
+
+<header th:replace="~{general/fragmentos :: header}"></header>
+
+<div class="container py-5">
+    <div class="row g-4">
+
+        <!-- Imagen -->
+        <div class="col-md-5 text-center">
+            <div class="position-relative d-inline-block">
+                <img th:if="${producto.rutaImagen != null}"
+                     th:src="${producto.rutaImagen}"
+                     th:alt="${producto.descripcion}"
+                     class="img-fluid rounded shadow-sm"
+                     style="max-height:400px; object-fit:contain;"/>
+                <img th:unless="${producto.rutaImagen != null}"
+                     src="https://placehold.co/400x400?text=Producto"
+                     class="img-fluid rounded shadow-sm"/>
+                <span th:if="${producto.descuento > 0}"
+                      class="position-absolute top-0 start-0 badge bg-danger m-2 fs-6"
+                      th:text="'🏷️ -' + ${producto.descuento} + '%'">
+                </span>
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div class="col-md-7">
+
+            <!-- Categoría -->
+            <small class="text-muted text-uppercase fw-semibold"
+                   th:text="${producto.categoria != null ? producto.categoria.descripcion : ''}">
+            </small>
+
+            <!-- Nombre -->
+            <h2 class="fw-bold mt-1" th:text="${producto.descripcion}">Producto</h2>
+
+            <!-- Precio -->
+            <div class="my-3">
+                <span class="text-success fw-bold fs-3"
+                      th:text="'₡ ' + ${#numbers.formatDecimal(producto.precio,1,'COMMA',2,'POINT')}">
+                </span>
+                <span th:if="${producto.descuento > 0}"
+                      class="text-muted text-decoration-line-through ms-2 fs-5"
+                      th:text="'₡ ' + ${#numbers.formatDecimal(producto.precio / (1 - producto.descuento / 100.0), 1,'COMMA',2,'POINT')}">
+                </span>
+            </div>
+
+            <!-- Stock -->
+            <div class="mb-3">
+                <span th:if="${producto.existencias > 0}"
+                      class="badge bg-success fs-6"
+                      th:text="${producto.existencias} + ' unidades disponibles'">
+                </span>
+                <span th:unless="${producto.existencias > 0}"
+                      class="badge bg-danger fs-6">Agotado</span>
+            </div>
+
+            <!-- Detalle -->
+            <p class="text-muted" th:text="${producto.detalle}"></p>
+
+            <hr/>
+
+            <!-- Botones -->
+            <div class="d-flex gap-3 flex-wrap">
+                <form th:action="@{/carrito/agregar}" method="post">
+                    <input type="hidden" name="idProducto" th:value="${producto.idProducto}"/>
+                    <button type="button"
+                            class="btn btn-success btn-lg"
+                            th:disabled="${producto.existencias <= 0}"
+                            onclick="addCart(this.form)">
+                        <i class="fas fa-cart-plus me-2"></i>
+                        Agregar al carrito
+                    </button>
+                </form>
+
+                <a th:href="@{/}" class="btn btn-outline-secondary btn-lg">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Seguir comprando
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{general/fragmentos :: footer}"></footer>
+</body>
+</html>

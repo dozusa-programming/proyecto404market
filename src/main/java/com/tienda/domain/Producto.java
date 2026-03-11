@@ -36,7 +36,7 @@ public class Producto implements Serializable {
     @Size(max=1024)
     private String rutaImagen;
     private boolean activo;
-    
+    private int descuento;
     @ManyToOne
     @JoinColumn (name="id_categoria")
     private Categoria categoria;

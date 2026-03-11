@@ -51,5 +51,23 @@ public class IndexController {
         model.addAttribute("categorias", categorias);
         return "/index";
     }
+    @GetMapping("/ofertas")
+    public String ofertas(Model model) {
+        var productos = productoService.getOfertas();
+        model.addAttribute("productos", productos);
+        var categorias = categoriaService.getCategorias(true);
+        model.addAttribute("categorias", categorias);
+        return "/index";
+    }
+    @GetMapping("/producto/{id}")
+    public String detalle(@PathVariable("id") Integer id, Model model) {
+        var producto = productoService.getProducto(id)
+            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        model.addAttribute("producto", producto);
+        var categorias = categoriaService.getCategorias(true);
+        model.addAttribute("categorias", categorias);
+        return "/producto/detalle";
+    }
+
 
 }

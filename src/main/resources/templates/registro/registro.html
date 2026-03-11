@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body class="bg-light">
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100 py-5">
+    <div class="card shadow-sm" style="width:100%; max-width:520px;">
+
+        <!-- Header -->
+        <div class="card-header bg-success text-white text-center py-4">
+            <h4 class="mb-0 fw-bold">
+                <i class="fas fa-user-plus me-2"></i>
+                <span th:text="#{accion.registrar}">Registrarse</span>
+            </h4>
+            <small th:text="#{aplicacion.titulo}">Supermercado</small>
+        </div>
+
+        <div class="card-body p-4">
+
+            <!-- Error -->
+            <div th:if="${error}"
+                 class="alert alert-danger d-flex align-items-center py-2">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${error}"></span>
+            </div>
+
+            <form th:action="@{/registro/nuevo}" method="post" th:object="${usuario}">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold"
+                               th:text="#{usuario.nombre}">Nombre</label>
+                        <input type="text" class="form-control"
+                               th:field="*{nombre}" required/>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold"
+                               th:text="#{usuario.apellidos}">Apellidos</label>
+                        <input type="text" class="form-control"
+                               th:field="*{apellidos}" required/>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold"
+                               th:text="#{usuario.username}">Usuario</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <i class="fas fa-user text-success"></i>
+                            </span>
+                            <input type="text" class="form-control"
+                                   th:field="*{username}" required/>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold"
+                               th:text="#{usuario.correo}">Correo</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <i class="fas fa-envelope text-success"></i>
+                            </span>
+                            <input type="email" class="form-control"
+                                   th:field="*{correo}" required/>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold"
+                               th:text="#{usuario.telefono}">Teléfono</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <i class="fas fa-phone text-success"></i>
+                            </span>
+                            <input type="tel" class="form-control"
+                                   th:field="*{telefono}"/>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold"
+                               th:text="#{usuario.password}">Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <i class="fas fa-lock text-success"></i>
+                            </span>
+                            <input type="password" class="form-control"
+                                   th:field="*{password}" required/>
+                            <button class="btn btn-outline-secondary" type="button"
+                                    onclick="togglePass()">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-success btn-lg"
+                            th:text="#{accion.registrar}">Registrarse</button>
+                </div>
+
+                <div class="text-center mt-3">
+                    <span class="text-muted small">¿Ya tenés cuenta?</span>
+                    <a th:href="@{/login}" class="text-success fw-semibold ms-1 small"
+                       th:text="#{login.login}">Iniciar sesión</a>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="card-footer text-center bg-white py-3">
+            <a th:href="@{/}" class="text-success text-decoration-none small">
+                <i class="fas fa-arrow-left me-1"></i>
+                Volver a la tienda
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function togglePass() {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+</script>
+
+</body>
+</html>
