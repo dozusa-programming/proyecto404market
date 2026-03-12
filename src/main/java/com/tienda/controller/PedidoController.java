@@ -17,13 +17,11 @@ public class PedidoController {
         this.pedidoService = pedidoService;
     }
 
-    // Formulario de pago — muestra opciones TARJETA / ENTREGA
     @GetMapping
     public String formulario() {
         return "pago/index";
     }
 
-    // Confirmar pedido
     @PostMapping("/confirmar")
     public String confirmar(@RequestParam String metodoPago,
                             Principal principal,

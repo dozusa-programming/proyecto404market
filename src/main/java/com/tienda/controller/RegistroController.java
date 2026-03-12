@@ -21,29 +21,28 @@ public class RegistroController {
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("usuario", new Usuario());
-        return "/registro/nuevo";
+        return "registro/nuevo";  
     }
 
     @PostMapping("/nuevo")
     public String registrar(Usuario usuario, Model model) {
 
-        // Validar username duplicado
         if (usuarioService.existeUsername(usuario.getUsername())) {
             model.addAttribute("error",
                 "El usuario '" + usuario.getUsername() + "' ya existe.");
             model.addAttribute("usuario", usuario);
-            return "/registro/nuevo";
+            return "registro/nuevo";  
         }
 
-        // Validar correo duplicado
         if (usuarioService.existeCorreo(usuario.getCorreo())) {
             model.addAttribute("error",
                 "El correo '" + usuario.getCorreo() + "' ya está registrado.");
             model.addAttribute("usuario", usuario);
-            return "/registro/nuevo";
+            return "registro/nuevo"; 
         }
 
         usuarioService.registrar(usuario);
         return "redirect:/login?registrado=true";
     }
+
 }

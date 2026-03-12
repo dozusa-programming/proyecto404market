@@ -28,13 +28,13 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Rutas públicas
+                // Rutas públicas para que cualquier usuario acceda
                 .requestMatchers(
                     "/", "/buscar", "/consultas/**", "/ofertas",
                     "/login", "/registro/**", "/error",
                     "/webjars/**", "/css/**", "/js/**", "/fav/**", "/img/**"
                 ).permitAll()
-                // Solo admin
+                // Solo administradores pueden consultar estas
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/producto/**", "/categoria/**").hasRole("ADMIN")
                 .requestMatchers("/error", "/error/**").permitAll()

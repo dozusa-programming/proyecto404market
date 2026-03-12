@@ -19,41 +19,41 @@
 </head>
 
 <!-- ========== HEADER ========== -->
-<header th:fragment="header" class="header sticky-top bg-white shadow-sm">
+<header th:fragment="header" class="sticky-top shadow-sm">
 
-    <!-- Barra superior: logo, búsqueda, modos, carrito, idioma, login -->
-    <nav class="navbar navbar-expand-md px-3 py-2 border-bottom">
-        <!-- Logo → HU17 -->
-        <a th:href="@{/}" class="navbar-brand fw-bold text-success fs-4"
-           th:text="#{aplicacion.titulo}">TechShop</a>
+    <!-- ===== ÚNICA BARRA ===== -->
+    <nav class="navbar px-3 py-2 bg-white border-bottom">
+        <!-- Logo -->
+        <a th:href="@{/}" class="navbar-brand fw-bold text-success fs-5"
+           th:text="#{aplicacion.titulo}">Supermercado</a>
 
-        <!-- Búsqueda → HU7 -->
-        <form th:action="@{/buscar}" method="get" class="d-flex mx-3 flex-grow-1">
-            <input class="form-control rounded-pill"
-                   type="search" name="q"
+        <!-- Búsqueda -->
+        <form th:action="@{/buscar}" method="get" class="d-flex flex-grow-1 mx-3">
+            <input class="form-control" type="search" name="q"
                    th:value="${param.q}"
                    th:placeholder="#{plantilla.buscar}"/>
         </form>
 
-        <div class="d-flex align-items-center gap-2 ms-auto">
-            <!-- Botones modo → HU18 -->
-            <a th:href="@{/}" class="btn btn-outline-success btn-sm rounded-pill"
+        <!-- Botones modo -->
+        <div class="d-flex align-items-center gap-2">
+            <a th:href="@{/ofertas}" class="btn btn-outline-success btn-sm" th:text="#{plantilla.ofertas}">Ofertas</a>
+            <a th:href="@{/}" class="btn btn-outline-success btn-sm"
                th:text="#{plantilla.tienda}">En tienda</a>
-            <a th:href="@{/online}" class="btn btn-outline-success btn-sm rounded-pill"
+            <a th:href="@{/online}" class="btn btn-outline-success btn-sm"
                th:text="#{plantilla.online}">En línea</a>
 
-            <!-- Carrito → HU5 -->
+            <!-- Carrito -->
             <a th:href="@{/carrito}" class="btn btn-outline-secondary btn-sm position-relative">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                       th:text="${cantidadCarrito}"
-                      th:if="${cantidadCarrito > 0}">0</span>
+                      th:if="${cantidadCarrito > 0}"></span>
             </a>
 
-
-            <!-- Selector de idioma → HU3 (reutiliza ?lang=xx) -->
+            <!-- Idioma -->
             <div class="dropdown">
-                <a class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                <a class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                   data-bs-toggle="dropdown">
                     <i class="fas fa-globe"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -64,72 +64,61 @@
                 </ul>
             </div>
 
-            <!-- Login → HU1 -->
-            <!-- Login / Usuario logueado -->
-            <div sec:authorize="isAnonymous()">
+            <!-- Anónimo -->
+            <div sec:authorize="isAnonymous()" class="d-flex gap-2">
+                <a th:href="@{/registro/nuevo}" class="btn btn-outline-success btn-sm"
+                   th:text="#{plantilla.registro}">Registrarse</a>
                 <a th:href="@{/login}" class="btn btn-success btn-sm"
                    th:text="#{plantilla.login}">Iniciar sesión</a>
             </div>
 
+            <!-- Autenticado -->
             <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-2">
                 <span class="text-muted small">
-                    <i class="fas fa-user-circle text-success fs-5"></i>
+                    <i class="fas fa-user-circle text-success"></i>
                     <span sec:authentication="name"></span>
                 </span>
+                <!-- Mis pedidos -->
+                <a th:href="@{/pago/mis-pedidos}" class="btn btn-outline-secondary btn-sm"
+                   th:text="#{plantilla.misProductos}">Mis pedidos</a>
+                <!-- Logout -->
                 <form th:action="@{/logout}" method="post" class="d-inline">
                     <button type="submit" class="btn btn-outline-danger btn-sm">
-                        <i class="fas fa-sign-out-alt"></i> Salir
+                        <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </form>
             </div>
 
-        </div>
-    </nav>
-
-    <!-- Menú secundario → HU12 -->
-    <nav class="navbar px-3 py-1 bg-success">
-        <div class="d-flex align-items-center gap-3 w-100">
-            <a th:href="@{/}" class="nav-link text-white fw-semibold"
-               th:classappend="${#strings.isEmpty(param.categoria) and #strings.isEmpty(param.q)} ? ' text-decoration-underline'"
-               th:text="#{plantilla.todos}">Todos los productos</a>
-
-            <a th:href="@{/ofertas}" class="nav-link text-white"
-               th:text="#{plantilla.ofertas}">Ofertas</a>
-
-            <a th:href="@{/pago/mis-pedidos}" class="nav-link text-white"
-               th:text="#{plantilla.misProductos}">Mis productos</a>
-
-            <!-- Región → HU8 -->
-            <div class="ms-auto">
-                <select class="form-select form-select-sm"
-                        onchange="cambiarRegion(this.value)">
-                    <option value="" th:text="#{plantilla.region}">Seleccione su región</option>
-                    <option value="SJ">San José</option>
-                    <option value="AL">Alajuela</option>
-                    <option value="HE">Heredia</option>
-                    <option value="CA">Cartago</option>
-                </select>
-            </div>
+            <!-- Región -->
+            <select class="form-select form-select-sm" style="width:auto;"
+                    onchange="cambiarRegion(this.value)">
+                <option value="" th:text="#{plantilla.region}">Región</option>
+                <option value="SJ">San José</option>
+                <option value="AL">Alajuela</option>
+                <option value="HE">Heredia</option>
+                <option value="CA">Cartago</option>
+            </select>
         </div>
     </nav>
 
     <!-- Alertas -->
-    <div class="container mt-2">
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show py-2" role="alert">
+    <div class="container-fluid px-3">
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show py-2 mb-0" role="alert">
             <span th:text="${error}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <div th:if="${todoOk}" class="alert alert-success alert-dismissible fade show py-2" role="alert">
+        <div th:if="${todoOk}" class="alert alert-success alert-dismissible fade show py-2 mb-0" role="alert">
             <span th:text="${todoOk}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     </div>
 </header>
 
+
 <!-- ========== FOOTER ========== -->
 <footer th:fragment="footer" class="p-2 mt-5 bg-success text-white">
     <p class="lead text-center mb-0">
-        <span th:text="#{plantilla.suTienda}">TechShop</span>
+        <span th:text="#{plantilla.suTienda}">404 Market</span>
         — <span th:text="#{plantilla.derechos}">Derechos reservados</span> ©
     </p>
 </footer>

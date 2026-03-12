@@ -35,7 +35,7 @@ public class CarritoController {
     @PostMapping("/agregar")
     public String agregar(@RequestParam Integer idProducto, Principal principal) {
         carritoService.agregar(principal.getName(), idProducto);
-        return "redirect:/consultas/listado";
+        return "redirect:/";
     }
 
     @PostMapping("/actualizar")
